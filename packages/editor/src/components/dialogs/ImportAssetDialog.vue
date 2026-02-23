@@ -218,10 +218,13 @@ async function processFile(file: File) {
 function onBrowseClick() {
   const input = document.createElement('input');
   input.type = 'file';
+  input.multiple = true;
   input.accept = '.json,.dimetric,.tmj,.tmx,.tsx,.tsj,.png,.jpg,.jpeg,.webp';
   input.onchange = () => {
-    const file = input.files?.[0];
-    if (file) processFile(file);
+    const files = input.files;
+    if (files && files.length > 0) {
+      processFiles(Array.from(files));
+    }
   };
   input.click();
 }
