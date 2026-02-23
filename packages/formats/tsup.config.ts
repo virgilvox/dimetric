@@ -6,5 +6,5 @@ export default defineConfig({
   dts: true,
   clean: true,
   sourcemap: true,
-  external: ['@dimetric/core'],
+  external: ['@dimetric/core', 'pako', 'fast-xml-parser'],
 });

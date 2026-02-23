@@ -50,6 +50,8 @@ export interface DmObject {
   rotation: number;
   gid?: number;
   visible: boolean;
+  /** Anchor point (0-1 normalized). */
+  anchor?: { x: number; y: number };
   properties?: DmPropertyBag;
 }
 

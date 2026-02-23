@@ -1,5 +1,6 @@
 import type { Size } from './geometry';
 import type { DmPropertyBag } from './properties';
+import type { DmWangSet } from './wang';
 
 /** Shape type for collision regions on a tile. */
 export type DmCollisionShapeType = 'rect' | 'ellipse' | 'polygon';
@@ -51,4 +52,6 @@ export interface DmTileset {
   /** Per-tile data keyed by local tile ID. */
   tiles: Record<number, DmTileData>;
   properties?: DmPropertyBag;
+  /** Wang sets for terrain auto-tiling. */
+  wangSets?: DmWangSet[];
 }

@@ -1,6 +1,8 @@
 {
   "name": "@dimetric/core",
   "version": "0.0.1",
+  "description": "Core types, isometric math, and factory functions for the Dimetric tile map engine",
+  "license": "MIT",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -12,7 +14,16 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": ["dist"],
+  "files": ["dist", "LICENSE"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dimetric/dimetric",
+    "directory": "packages/core"
+  },
+  "keywords": ["isometric", "tilemap", "game", "2d", "pixi", "tiled"],
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "build": "tsup",
     "test": "vitest run",

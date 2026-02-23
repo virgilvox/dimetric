@@ -1,8 +1,20 @@
 import { Container, Sprite, type Texture } from 'pixi.js';
-import { gridToScreen } from '@dimetric/core';
+import { gridToScreen, type FlipFlags } from '@dimetric/core';
 
-/** Renders a ghost tile sprite at the cursor position. */
+/**
+ * Renders a semi-transparent ghost tile sprite at the cursor position.
+ * Shows a preview of the tile that will be placed when the user clicks.
+ *
+ * @example
+ * ```ts
+ * const cursor = new CursorRenderer();
+ * cursor.setTileSize(64, 32);
+ * cursor.setTexture(tileTexture);
+ * cursor.moveTo(3, 5);
+ * ```
+ */
 export class CursorRenderer {
+  /** The PixiJS container holding the cursor sprite. */
   readonly container: Container;
   private sprite: Sprite | null = null;
   private tileWidth = 0;
@@ -13,12 +25,22 @@ export class CursorRenderer {
     this.container.alpha = 0.5;
   }
 
+  /**
+   * Set the tile dimensions used for positioning the cursor sprite.
+   *
+   * @param tileWidth - Width of a single tile in pixels.
+   * @param tileHeight - Height of a single tile in pixels.
+   */
   setTileSize(tileWidth: number, tileHeight: number): void {
     this.tileWidth = tileWidth;
     this.tileHeight = tileHeight;
   }
 
-  /** Set the texture shown at cursor. Pass null to hide. */
+  /**
+   * Set the texture shown at the cursor position. Pass `null` to hide the cursor sprite.
+   *
+   * @param texture - The tile texture to display, or `null` to hide.
+   */
   setTexture(texture: Texture | null): void {
     if (!texture) {
       if (this.sprite) {
@@ -36,7 +58,12 @@ export class CursorRenderer {
     }
   }
 
-  /** Move cursor ghost to a grid cell. */
+  /**
+   * Move the cursor ghost sprite to the given grid cell.
+   *
+   * @param col - Grid column index.
+   * @param row - Grid row index.
+   */
   moveTo(col: number, row: number): void {
     if (!this.sprite) return;
     const { sx, sy } = gridToScreen(col, row, this.tileWidth, this.tileHeight);
@@ -45,10 +72,31 @@ export class CursorRenderer {
     this.sprite.visible = true;
   }
 
+  /**
+   * Apply flip flags to the cursor ghost sprite by adjusting scale and rotation.
+   *
+   * @param flags - The flip flags to apply (horizontal, vertical, diagonal).
+   */
+  setFlipFlags(flags: FlipFlags): void {
+    if (!this.sprite) return;
+    this.sprite.scale.x = flags.horizontal ? -1 : 1;
+    this.sprite.scale.y = flags.vertical ? -1 : 1;
+    // Diagonal flip in Tiled corresponds to a transpose (90-degree rotation component)
+    // Combined with H/V it produces 90/180/270 CW rotations
+    if (flags.diagonal) {
+      // Diagonal flag adds a 90 CW rotation
+      this.sprite.rotation = Math.PI / 2;
+    } else {
+      this.sprite.rotation = 0;
+    }
+  }
+
+  /** Hide the cursor ghost sprite. */
   hide(): void {
     if (this.sprite) this.sprite.visible = false;
   }
 
+  /** Destroy the cursor sprite and container, releasing GPU resources. */
   destroy(): void {
     this.sprite?.destroy();
     this.container.destroy();

@@ -11,7 +11,12 @@ export interface CreateTilesetOptions {
   margin?: number;
 }
 
-/** Create a new tileset from an image with grid parameters. */
+/**
+ * Create a new tileset from an image with grid parameters.
+ * Calculates column count and total tile count from the image/tile dimensions.
+ * @param options - Tileset configuration including image source and tile grid sizing
+ * @returns A new {@link DmTileset} with computed columns and tile count
+ */
 export function createTileset(options: CreateTilesetOptions): DmTileset {
   const { imageSize, tileSize, spacing = 0, margin = 0 } = options;
   const usableWidth = imageSize.width - 2 * margin + spacing;

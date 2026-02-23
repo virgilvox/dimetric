@@ -5,21 +5,26 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { DmRenderer } from '@dimetric/renderer';
-import { snapToGrid } from '@dimetric/core';
+import { snapToGrid, extractFlipFlags } from '@dimetric/core';
 import { useProjectStore } from '../../stores/project';
 import { useEditorStore } from '../../stores/editor';
 import { useCameraStore } from '../../stores/camera';
+import { usePreviewStore } from '../../stores/preview';
 import { editorBus } from '../../events/bus';
 import { useTool } from '../../composables/use-tool';
 import { useKeyboard } from '../../composables/use-keyboard';
+import { PreviewManager } from '../../preview/preview-manager';
 
 const containerRef = ref<HTMLElement | null>(null);
 let renderer: DmRenderer | null = null;
 let canvasEl: HTMLCanvasElement | null = null;
+let onViewportMoved: (() => void) | null = null;
 
 const project = useProjectStore();
 const editor = useEditorStore();
 const camera = useCameraStore();
+const preview = usePreviewStore();
+const previewManager = new PreviewManager();
 const activeToolRef = computed(() => editor.activeTool);
 const { current: currentTool } = useTool(activeToolRef);
 
@@ -60,23 +65,38 @@ watch(
   { deep: true },
 );
 
+/** Returns true if the active layer is locked (tool mutations should be skipped). */
+function isActiveLayerLocked(): boolean {
+  const map = project.activeMap;
+  if (!map || !editor.activeLayerId) return false;
+  const layer = map.layers.find((l) => l.id === editor.activeLayerId);
+  return layer?.locked ?? false;
+}
+
 // Listen to canvas events from the event bus and dispatch to active tool
 function onCanvasPointerDown(data: { col: number; row: number; button: number }) {
+  if (editor.mode === 'preview') return;
   if (editor.activeTool === 'pan') return;
+  if (isActiveLayerLocked()) return;
   currentTool.onPointerDown(data, data.button);
 }
 
 function onCanvasPointerDrag(data: { col: number; row: number }) {
+  if (editor.mode === 'preview') return;
   if (editor.activeTool === 'pan') return;
+  if (isActiveLayerLocked()) return;
   currentTool.onPointerDrag(data);
 }
 
 function onCanvasPointerUp(data: { col: number; row: number; button: number }) {
+  if (editor.mode === 'preview') return;
   if (editor.activeTool === 'pan') return;
+  if (isActiveLayerLocked()) return;
   currentTool.onPointerUp(data, data.button);
 }
 
 function onCanvasHover(data: { col: number; row: number }) {
+  if (editor.mode === 'preview') return;
   editor.setHoveredCell(data.col, data.row);
   if (renderer) {
     renderer.highlight.show(data.col, data.row);
@@ -84,6 +104,8 @@ function onCanvasHover(data: { col: number; row: number }) {
       const tex = tileTextures.get(editor.selectedGid);
       if (tex) {
         renderer.cursor.setTexture(tex);
+        const flags = extractFlipFlags(editor.selectedGid);
+        renderer.cursor.setFlipFlags(flags);
         renderer.cursor.moveTo(data.col, data.row);
       }
     }
@@ -95,6 +117,28 @@ function onCanvasLeave() {
   editor.setHoveredCell(null, null);
   renderer?.highlight.hide();
   renderer?.cursor.hide();
+}
+
+// Preview mode handlers
+function onPreviewStart() {
+  if (!renderer || !project.activeMap) return;
+  editor.mode = 'preview';
+  preview.activate();
+  renderer.highlight.hide();
+  renderer.cursor.hide();
+  previewManager.start(renderer, project.activeMap, {
+    startCol: preview.startCol,
+    startRow: preview.startRow,
+    collisionLayerName: preview.collisionLayerName,
+  });
+}
+
+function onPreviewStop() {
+  if (!renderer) return;
+  previewManager.stop(renderer);
+  editor.mode = 'edit';
+  preview.deactivate();
+  renderer.setGridVisible(editor.showGrid);
 }
 
 function onMapChanged() {
@@ -178,10 +222,12 @@ onMounted(async () => {
   editorBus.on('canvas:hover', onCanvasHover);
   editorBus.on('canvas:pointerleave', onCanvasLeave);
   editorBus.on('map:changed', onMapChanged);
+  editorBus.on('preview:start', onPreviewStart);
+  editorBus.on('preview:stop', onPreviewStop);
 
   // Update camera store when viewport moves
   const vp = renderer.getViewport().viewport;
-  const onViewportMoved = () => {
+  onViewportMoved = () => {
     if (!renderer) return;
     const state = renderer.camera.getState();
     camera.update(state.x, state.y, state.zoom);
@@ -202,9 +248,10 @@ onUnmounted(() => {
   }
 
   // Remove viewport listener before destroying renderer
-  if (renderer) {
+  if (renderer && onViewportMoved) {
     const vp = renderer.getViewport().viewport;
-    vp.off('moved');
+    vp.off('moved', onViewportMoved);
+    onViewportMoved = null;
   }
 
   // Remove bus listeners
@@ -214,6 +261,13 @@ onUnmounted(() => {
   editorBus.off('canvas:hover', onCanvasHover);
   editorBus.off('canvas:pointerleave', onCanvasLeave);
   editorBus.off('map:changed', onMapChanged);
+  editorBus.off('preview:start', onPreviewStart);
+  editorBus.off('preview:stop', onPreviewStop);
+
+  // Clean up preview if active
+  if (previewManager.isActive && renderer) {
+    previewManager.stop(renderer);
+  }
 
   // Destroy renderer last
   renderer?.destroy();

@@ -3,7 +3,18 @@ import type { DmTileset, DmTilesetRef } from '@dimetric/core';
 
 /**
  * Slice a tileset's base texture into individual tile textures.
- * Returns a Map from global tile ID (GID) to Texture.
+ * Respects tileset spacing and margin when computing frame rectangles.
+ *
+ * @param baseTexture - The full tileset image as a PixiJS Texture.
+ * @param tileset - The tileset metadata containing tile size, columns, count, spacing, and margin.
+ * @param firstGid - The first global tile ID assigned to this tileset.
+ * @returns A Map from global tile ID (GID) to individual tile Texture.
+ *
+ * @example
+ * ```ts
+ * const textures = sliceTilesetTextures(baseTexture, tileset, 1);
+ * const tile5 = textures.get(5);
+ * ```
  */
 export function sliceTilesetTextures(
   baseTexture: Texture,
@@ -26,7 +37,19 @@ export function sliceTilesetTextures(
   return textures;
 }
 
-/** Build a combined GID -> Texture map from all tileset refs. */
+/**
+ * Build a combined GID-to-Texture map from all loaded tileset references.
+ * Merges sliced textures from every tileset into a single lookup map.
+ *
+ * @param tilesetTextures - Map from tileset ID to its base texture and tileset reference.
+ * @returns A unified Map from global tile ID (GID) to PixiJS Texture.
+ *
+ * @example
+ * ```ts
+ * const combined = buildTileTextureMap(loadedTilesets);
+ * renderer.setTileTextures(combined);
+ * ```
+ */
 export function buildTileTextureMap(
   tilesetTextures: Map<string, { baseTexture: Texture; ref: DmTilesetRef }>,
 ): Map<number, Texture> {

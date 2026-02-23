@@ -1,6 +1,8 @@
 {
   "name": "@dimetric/renderer",
   "version": "0.0.1",
+  "description": "PixiJS-based isometric tile map renderer for the Dimetric engine",
+  "license": "MIT",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -12,18 +14,30 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": ["dist"],
+  "files": ["dist", "LICENSE"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dimetric/dimetric",
+    "directory": "packages/renderer"
+  },
+  "keywords": ["isometric", "tilemap", "renderer", "pixijs", "2d"],
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "build": "tsup",
     "test": "vitest run",
     "test:watch": "vitest"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@dimetric/core": "workspace:*",
     "pixi.js": "^8.0.0",
     "pixi-viewport": "^6.0.0"
   },
   "devDependencies": {
+    "@dimetric/core": "workspace:*",
+    "pixi.js": "^8.0.0",
+    "pixi-viewport": "^6.0.0",
     "typescript": "^5.6.0",
     "tsup": "^8.0.0",
     "vitest": "^2.0.0"

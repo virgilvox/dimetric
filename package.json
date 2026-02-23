@@ -2,14 +2,22 @@
   "name": "dimetric",
   "private": true,
   "scripts": {
-    "build": "pnpm -r --filter '!@dimetric/editor' run build && pnpm --filter @dimetric/editor run build",
+    "build": "pnpm -r --filter '!@dimetric/editor' --filter '!demo-game' run build && pnpm --filter @dimetric/editor run build",
     "dev": "pnpm --filter @dimetric/editor run dev",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "tsc --noEmit",
-    "clean": "pnpm -r run clean"
+    "clean": "pnpm -r run clean",
+    "demo": "pnpm --filter demo-game run dev",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "changeset publish",
+    "docs": "typedoc"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.27.0",
+    "typedoc": "^0.28.0",
+    "typedoc-plugin-markdown": "^4.4.0",
     "typescript": "^5.6.0",
     "tsup": "^8.0.0",
     "vite": "^6.0.0",

@@ -1,7 +1,14 @@
 import type { DmProject, DmMap, DmLayer, DmTileset } from '@dimetric/core';
 import { FORMAT_MAGIC, SCHEMA_VERSION, type SerializedProject, type SerializedMap, type SerializedLayer, type SerializedTileset } from './schema';
 
-/** Serialize a DmProject to a plain JSON-compatible object. */
+/**
+ * Serialize a DmProject to a plain JSON-compatible object.
+ *
+ * Converts Uint32Array tile data to regular number arrays for JSON compatibility.
+ *
+ * @param project - The project to serialize.
+ * @returns A plain object suitable for JSON.stringify.
+ */
 export function serializeProject(project: DmProject): SerializedProject {
   return {
     _format: FORMAT_MAGIC,
@@ -77,7 +84,12 @@ function serializeTileset(ts: DmTileset): SerializedTileset {
   };
 }
 
-/** Serialize a project to a JSON string. */
+/**
+ * Serialize a project to a JSON string with 2-space indentation.
+ *
+ * @param project - The project to serialize.
+ * @returns A pretty-printed JSON string.
+ */
 export function serializeProjectToJson(project: DmProject): string {
   return JSON.stringify(serializeProject(project), null, 2);
 }

@@ -1,9 +1,10 @@
-/** Current schema version for the native format. */
+/** Current schema version for the native dimetric format. */
 export const SCHEMA_VERSION = 1;
 
-/** Marker used to identify serialized DmProject JSON files. */
+/** Magic string marker used to identify serialized DmProject JSON files. */
 export const FORMAT_MAGIC = 'dimetric-project';
 
+/** Serialized representation of a DmProject, suitable for JSON persistence. */
 export interface SerializedProject {
   _format: typeof FORMAT_MAGIC;
   _version: number;
@@ -12,6 +13,7 @@ export interface SerializedProject {
   tilesets: SerializedTileset[];
 }
 
+/** Serialized representation of a DmMap within a project file. */
 export interface SerializedMap {
   id: string;
   name: string;
@@ -24,6 +26,7 @@ export interface SerializedMap {
   properties?: Record<string, unknown>;
 }
 
+/** Serialized representation of a map layer (tile, object, image, or group). */
 export interface SerializedLayer {
   id: string;
   name: string;
@@ -46,6 +49,7 @@ export interface SerializedLayer {
   properties?: Record<string, unknown>;
 }
 
+/** Serialized representation of a DmTileset within a project file. */
 export interface SerializedTileset {
   id: string;
   name: string;

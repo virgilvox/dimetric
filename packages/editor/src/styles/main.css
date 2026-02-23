@@ -56,3 +56,44 @@ input:focus, select:focus {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-muted);
 }
+
+/* Shared button classes */
+.dm-btn {
+  padding: 8px 20px;
+  border-radius: var(--border-radius);
+  font-size: 14px;
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dm-btn:hover {
+  background: var(--bg-active);
+}
+
+.dm-btn-primary {
+  background: var(--accent);
+  color: white;
+}
+
+.dm-btn-primary:hover {
+  background: var(--accent-hover);
+}
+
+.dm-btn-icon {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: var(--border-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+}
+
+.dm-btn-icon:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}

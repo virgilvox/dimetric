@@ -1,4 +1,4 @@
-import type { DmMap, DmTileLayer, DmObjectLayer, DmImageLayer, DmGroupLayer } from '../types/map';
+import type { DmMap, DmTileLayer, DmObjectLayer, DmImageLayer, DmGroupLayer, DmOrientation } from '../types/map';
 import type { Size } from '../types/geometry';
 import { generateId } from './id-generator';
 import { DEFAULT_TILE_WIDTH, DEFAULT_TILE_HEIGHT, DEFAULT_MAP_COLS, DEFAULT_MAP_ROWS } from '../constants';
@@ -7,9 +7,14 @@ export interface CreateMapOptions {
   name?: string;
   mapSize?: Size;
   tileSize?: Size;
+  orientation?: DmOrientation;
 }
 
-/** Create a new empty isometric map with one tile layer. */
+/**
+ * Create a new empty isometric map with one tile layer.
+ * @param options - Optional map configuration (name, dimensions, tile size)
+ * @returns A new {@link DmMap} with a single empty tile layer
+ */
 export function createMap(options?: CreateMapOptions): DmMap {
   const mapSize = options?.mapSize ?? { width: DEFAULT_MAP_COLS, height: DEFAULT_MAP_ROWS };
   const tileSize = options?.tileSize ?? { width: DEFAULT_TILE_WIDTH, height: DEFAULT_TILE_HEIGHT };
@@ -27,7 +32,7 @@ export function createMap(options?: CreateMapOptions): DmMap {
   return {
     id: generateId(),
     name: options?.name ?? 'Untitled Map',
-    orientation: 'isometric',
+    orientation: options?.orientation ?? 'isometric',
     renderOrder: 'right-down',
     mapSize,
     tileSize,
@@ -42,7 +47,11 @@ export interface CreateTileLayerOptions {
   height: number;
 }
 
-/** Create a new empty tile layer. */
+/**
+ * Create a new empty tile layer with a zeroed {@link Uint32Array} data buffer.
+ * @param options - Layer configuration (name, width, height)
+ * @returns A new {@link DmTileLayer} with all tiles set to 0 (empty)
+ */
 export function createTileLayer(options: CreateTileLayerOptions): DmTileLayer {
   if (options.width <= 0 || options.height <= 0) {
     throw new Error(`Invalid tile layer dimensions: ${options.width}x${options.height} (must be positive)`);
@@ -65,7 +74,11 @@ export interface CreateObjectLayerOptions {
   name?: string;
 }
 
-/** Create a new empty object layer. */
+/**
+ * Create a new empty object layer.
+ * @param options - Optional layer configuration
+ * @returns A new {@link DmObjectLayer} with an empty objects array
+ */
 export function createObjectLayer(options?: CreateObjectLayerOptions): DmObjectLayer {
   return {
     id: generateId(),
@@ -84,7 +97,11 @@ export interface CreateImageLayerOptions {
   imageSource: string;
 }
 
-/** Create a new image layer. */
+/**
+ * Create a new image layer.
+ * @param options - Layer configuration including the image source path
+ * @returns A new {@link DmImageLayer}
+ */
 export function createImageLayer(options: CreateImageLayerOptions): DmImageLayer {
   return {
     id: generateId(),
@@ -102,7 +119,11 @@ export interface CreateGroupLayerOptions {
   name?: string;
 }
 
-/** Create a new empty group layer. */
+/**
+ * Create a new empty group layer for organizing child layers.
+ * @param options - Optional layer configuration
+ * @returns A new {@link DmGroupLayer} with an empty layers array
+ */
 export function createGroupLayer(options?: CreateGroupLayerOptions): DmGroupLayer {
   return {
     id: generateId(),

@@ -6,6 +6,7 @@ import { EraserTool } from '../tools/eraser-tool';
 import { PanTool } from '../tools/pan-tool';
 import { EyedropperTool } from '../tools/eyedropper-tool';
 import { FillTool } from '../tools/fill-tool';
+import { TerrainTool } from '../tools/terrain-tool';
 
 const toolInstances: Record<ToolType, Tool> = {
   brush: new BrushTool(),
@@ -13,6 +14,7 @@ const toolInstances: Record<ToolType, Tool> = {
   fill: new FillTool(),
   pan: new PanTool(),
   eyedropper: new EyedropperTool(),
+  terrain: new TerrainTool(),
 };
 
 export function useTool(activeToolRef: Ref<ToolType>) {

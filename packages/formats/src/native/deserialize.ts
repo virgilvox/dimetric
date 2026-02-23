@@ -6,7 +6,16 @@ import type {
 import { PROJECT_VERSION } from '@dimetric/core';
 import { FORMAT_MAGIC, type SerializedProject, type SerializedMap, type SerializedLayer, type SerializedTileset } from './schema';
 
-/** Deserialize a JSON-parsed object into a DmProject. */
+/**
+ * Deserialize a JSON-parsed object into a DmProject.
+ *
+ * Validates the format marker and schema version, then reconstructs
+ * Uint32Array tile data from plain number arrays.
+ *
+ * @param data - The raw parsed JSON object (from JSON.parse or similar).
+ * @returns A fully hydrated DmProject instance.
+ * @throws If the data is not a valid dimetric project or has an unsupported version.
+ */
 export function deserializeProject(data: unknown): DmProject {
   if (typeof data !== 'object' || data === null) {
     throw new Error(`Invalid project data: expected an object`);
@@ -137,7 +146,13 @@ function deserializeTileset(raw: SerializedTileset): DmTileset {
   };
 }
 
-/** Deserialize from a JSON string. */
+/**
+ * Deserialize a DmProject from a JSON string.
+ *
+ * @param json - The JSON string to parse.
+ * @returns A fully hydrated DmProject instance.
+ * @throws If the JSON is invalid or does not represent a valid dimetric project.
+ */
 export function deserializeProjectFromJson(json: string): DmProject {
   return deserializeProject(JSON.parse(json));
 }

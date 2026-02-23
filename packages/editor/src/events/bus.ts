@@ -14,8 +14,12 @@ export type EditorEvents = {
   'canvas:pointerleave': void;
   /** Map was changed (any tile/layer mutation). */
   'map:changed': void;
-  /** Tileset textures were loaded. */
-  'tileset:loaded': { tilesetId: string };
+  /** Start preview mode. */
+  'preview:start': void;
+  /** Stop preview mode. */
+  'preview:stop': void;
+  /** Files dropped or selected for import. */
+  'import:request': File[];
 };
 
 export const editorBus = mitt<EditorEvents>();

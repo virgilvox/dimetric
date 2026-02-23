@@ -35,3 +35,10 @@ export interface WorldCoord {
   wx: number;
   wy: number;
 }
+
+/** A 3D point with floating-point coordinates. */
+export interface Point3D {
+  x: number;
+  y: number;
+  z: number;
+}

@@ -1,6 +1,8 @@
 {
   "name": "@dimetric/runtime",
   "version": "0.0.1",
+  "description": "Game loop, entities, systems, and A* pathfinding for the Dimetric engine",
+  "license": "MIT",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -12,17 +14,28 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": ["dist"],
+  "files": ["dist", "LICENSE"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dimetric/dimetric",
+    "directory": "packages/runtime"
+  },
+  "keywords": ["isometric", "game", "runtime", "ecs", "pathfinding", "astar"],
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "build": "tsup",
     "test": "vitest run",
     "test:watch": "vitest"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@dimetric/core": "workspace:*",
     "@dimetric/renderer": "workspace:*"
   },
   "devDependencies": {
+    "@dimetric/core": "workspace:*",
+    "@dimetric/renderer": "workspace:*",
     "typescript": "^5.6.0",
     "tsup": "^8.0.0",
     "vitest": "^2.0.0"

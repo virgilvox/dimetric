@@ -2,6 +2,7 @@ import type { GridCoord } from '@dimetric/core';
 import type { Tool } from './tool';
 import { useProjectStore } from '../stores/project';
 import { useEditorStore } from '../stores/editor';
+import { useHistoryStore } from '../stores/history';
 import { editorBus } from '../events/bus';
 
 export class FillTool implements Tool {
@@ -19,6 +20,7 @@ export class FillTool implements Tool {
   private fill(start: GridCoord): void {
     const project = useProjectStore();
     const editor = useEditorStore();
+    const history = useHistoryStore();
     const map = project.activeMap;
     if (!map || !editor.activeLayerId || editor.selectedGid === 0) return;
 
@@ -33,6 +35,8 @@ export class FillTool implements Tool {
     const fillGid = editor.selectedGid;
     if (targetGid === fillGid) return;
 
+    history.beginBatch(map.id, editor.activeLayerId);
+
     // BFS flood fill
     const visited = new Set<number>();
     const queue: GridCoord[] = [start];
@@ -45,6 +49,7 @@ export class FillTool implements Tool {
       if (data[idx] !== targetGid) continue;
 
       visited.add(idx);
+      history.addToBatch(col, row, targetGid, fillGid);
       data[idx] = fillGid;
 
       queue.push({ col: col - 1, row });
@@ -53,6 +58,7 @@ export class FillTool implements Tool {
       queue.push({ col, row: row + 1 });
     }
 
+    history.endBatch();
     editorBus.emit('map:changed');
   }
 }

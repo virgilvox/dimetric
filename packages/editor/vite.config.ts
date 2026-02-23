@@ -9,6 +9,7 @@ export default defineConfig({
       '@dimetric/core': resolve(__dirname, '../core/src/index.ts'),
       '@dimetric/formats': resolve(__dirname, '../formats/src/index.ts'),
       '@dimetric/renderer': resolve(__dirname, '../renderer/src/index.ts'),
+      '@dimetric/runtime': resolve(__dirname, '../runtime/src/index.ts'),
     },
   },
 });

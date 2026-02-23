@@ -4,12 +4,14 @@ import {
   createMap,
   createTileset,
   createTileLayer,
+  createObjectLayer,
+  createImageLayer,
+  createGroupLayer,
   type DmMap,
   type DmTileset,
-  type DmTilesetRef,
   type DmTileLayer,
   type DmLayer,
-  type Size,
+  type DmLayerType,
   type CreateMapOptions,
   type CreateTilesetOptions,
   PROJECT_VERSION,
@@ -119,6 +121,55 @@ export const useProjectStore = defineStore('project', () => {
     if (layer) layer.name = name;
   }
 
+  function importMap(map: DmMap): void {
+    maps.value.push(map);
+    activeMapId.value = map.id;
+  }
+
+  function importTileset(tileset: DmTileset): void {
+    tilesets.value.push(tileset);
+
+    // Add to all maps with calculated firstGid
+    for (const map of maps.value) {
+      const firstGid = getNextFirstGid(map);
+      map.tilesets.push({ firstGid, tileset });
+    }
+  }
+
+  function addObjectLayer(mapId: string, name?: string): DmLayer | null {
+    const map = maps.value.find((m) => m.id === mapId);
+    if (!map) return null;
+    const layer = createObjectLayer({ name: name ?? `Objects ${map.layers.length + 1}` });
+    map.layers.push(layer);
+    return layer;
+  }
+
+  function addImageLayer(mapId: string, source: string, name?: string): DmLayer | null {
+    const map = maps.value.find((m) => m.id === mapId);
+    if (!map) return null;
+    const layer = createImageLayer({ name: name ?? `Image ${map.layers.length + 1}`, imageSource: source });
+    map.layers.push(layer);
+    return layer;
+  }
+
+  function addGroupLayer(mapId: string, name?: string): DmLayer | null {
+    const map = maps.value.find((m) => m.id === mapId);
+    if (!map) return null;
+    const layer = createGroupLayer({ name: name ?? `Group ${map.layers.length + 1}` });
+    map.layers.push(layer);
+    return layer;
+  }
+
+  function reorderLayer(mapId: string, fromIndex: number, toIndex: number): void {
+    const map = maps.value.find((m) => m.id === mapId);
+    if (!map) return;
+    if (fromIndex < 0 || fromIndex >= map.layers.length) return;
+    if (toIndex < 0 || toIndex >= map.layers.length) return;
+    if (fromIndex === toIndex) return;
+    const [layer] = map.layers.splice(fromIndex, 1);
+    map.layers.splice(toIndex, 0, layer);
+  }
+
   function $reset(): void {
     maps.value = [];
     tilesets.value = [];
@@ -135,10 +186,16 @@ export const useProjectStore = defineStore('project', () => {
     projectVersion,
     newMap,
     addTileset,
+    importMap,
+    importTileset,
     setTile,
     getTile,
     addLayer,
+    addObjectLayer,
+    addImageLayer,
+    addGroupLayer,
     removeLayer,
+    reorderLayer,
     setLayerVisible,
     setLayerLocked,
     renameLayer,

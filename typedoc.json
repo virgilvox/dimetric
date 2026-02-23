@@ -1,0 +1,18 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "packages/core/src/index.ts",
+    "packages/formats/src/index.ts",
+    "packages/renderer/src/index.ts",
+    "packages/runtime/src/index.ts"
+  ],
+  "entryPointStrategy": "expand",
+  "out": "docs/api",
+  "plugin": ["typedoc-plugin-markdown"],
+  "name": "Dimetric API Reference",
+  "readme": "none",
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "excludeExternals": true,
+  "tsconfig": "tsconfig.base.json"
+}

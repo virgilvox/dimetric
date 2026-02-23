@@ -215,11 +215,17 @@ describe('empty map round-trip', () => {
 describe('properties round-trip', () => {
   it('preserves map properties through serialization', () => {
     const project = makeTestProject();
-    project.maps[0].properties = { difficulty: 'hard', level: 3 };
+    project.maps[0].properties = {
+      difficulty: { name: 'difficulty', type: 'string', value: 'hard' },
+      level: { name: 'level', type: 'int', value: 3 },
+    };
 
     const json = serializeProjectToJson(project);
     const restored = deserializeProjectFromJson(json);
 
-    expect(restored.maps[0].properties).toEqual({ difficulty: 'hard', level: 3 });
+    expect(restored.maps[0].properties).toEqual({
+      difficulty: { name: 'difficulty', type: 'string', value: 'hard' },
+      level: { name: 'level', type: 'int', value: 3 },
+    });
   });
 });
