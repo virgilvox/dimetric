@@ -1,0 +1,10 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/core" },
+    { "path": "packages/formats" },
+    { "path": "packages/renderer" },
+    { "path": "packages/editor" },
+    { "path": "packages/runtime" }
+  ]
+}
